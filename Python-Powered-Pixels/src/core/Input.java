@@ -7,10 +7,6 @@ import org.python.util.PythonInterpreter;
 public class Input {
 
 	public static void updateVariables(PythonInterpreter interpreter) {
-		if(interpreter == null) {
-			return;
-		}
-		
 		int mouseX = Mouse.getX();
 		int mouseY = Mouse.getY();
 		
@@ -19,6 +15,8 @@ public class Input {
 		
 		interpreter.set("_screenWidth", Display.getWidth());
 		interpreter.set("_screenHeight", Display.getHeight());
+
+        interpreter.set("_deltaTime", Timer.getDelta());
 	}
 	
 	public static boolean isLeftMouseDown() {
@@ -36,12 +34,5 @@ public class Input {
 	public static boolean isKeyDown(String keyString) {
 		return KeyConverter.isKeyDown(keyString);
 	}
-	
-	public static int getMouseX() {
-		return Mouse.getX();
-	}
 
-	public static int getMouseY() {
-		return Mouse.getY();
-	}
 }

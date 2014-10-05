@@ -1,6 +1,9 @@
 package core;
 
 
+import audio.AudioController;
+import org.lwjgl.opengl.Display;
+
 public class GameController {
 	
 	public void newFrame() {
@@ -8,6 +11,8 @@ public class GameController {
 	}
 	
 	public void quit() {
+        Display.destroy();
+        AudioController.killALData();
 		System.exit(0);
 	}
 }

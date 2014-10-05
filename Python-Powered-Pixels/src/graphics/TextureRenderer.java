@@ -14,6 +14,8 @@ public class TextureRenderer {
 	private static int renderTextureID = -1;
 	private static int previousWidth = 640;
 	private static int previousHeight = 480;
+
+    private static int listIDs = glGenLists(1);
 	
 	public static void init() {
 		frameBufferID = glGenFramebuffers();
@@ -21,6 +23,19 @@ public class TextureRenderer {
 		createRenderTexture();
 		linkRenderTexture();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        glNewList(listIDs, GL_COMPILE);
+        glBegin(GL_QUADS);
+		glTexCoord2d(0, 0);
+		glVertex2d(-1, -1);
+		glTexCoord2d(1, 0);
+		glVertex2d(1, -1);
+		glTexCoord2d(1, 1);
+		glVertex2d(1, 1);
+		glTexCoord2d(0, 1);
+		glVertex2d(-1, 1);
+		glEnd();
+        glEndList();
 	}
 	
 	public static void drawScreenFrame() {
@@ -38,16 +53,7 @@ public class TextureRenderer {
 		glColor4f(1, 1, 1, 1);
 		glBindTexture(GL_TEXTURE_2D, renderTextureID);
 		
-		glBegin(GL_QUADS);
-		glTexCoord2d(0, 0);
-		glVertex2d(-1, -1);
-		glTexCoord2d(1, 0);
-		glVertex2d(1, -1);
-		glTexCoord2d(1, 1);
-		glVertex2d(1, 1);
-		glTexCoord2d(0, 1);
-		glVertex2d(-1, 1);
-		glEnd();
+        glCallList(listIDs);
 	}
 	
 	public static void setupNextFrame() {

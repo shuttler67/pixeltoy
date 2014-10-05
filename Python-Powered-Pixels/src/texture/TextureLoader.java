@@ -17,20 +17,20 @@ import javax.imageio.ImageIO;
 import org.lwjgl.BufferUtils;
 
 public class TextureLoader {	
-	public static Texture loadTextureFromFile(String src, boolean smooth, int animatedImageCountX)
+	public static Texture loadTextureFromFile(String src, boolean smooth, int animatedImageCountX) throws Exception
 	{
 		int textureID = createTextureFromImage(loadImageFromFile(src), smooth);
 		return new Texture(textureID, animatedImageCountX);
 	}
 	
-	private static int createTextureFromImage(BufferedImage image, boolean smooth)
+	private static int createTextureFromImage(BufferedImage image, boolean smooth) throws Exception
 	{
 		byte[] imageData = TexturePixelConverter.getImageDataBytes(image);
 		if((image != null) && (imageData != null))
 		{
 			return createTexture(imageData, image.getWidth(), image.getHeight(), smooth);
 		} else {
-			return -1;
+			throw new Exception("No image!");
 		}
 	}
 

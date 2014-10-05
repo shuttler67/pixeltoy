@@ -6,6 +6,9 @@ import static org.lwjgl.util.glu.GLU.gluOrtho2D;
 import java.io.File;
 import java.io.FileInputStream;
 
+import audio.AudioController;
+import graphics.Colour;
+import graphics.GraphicsController;
 import graphics.TextureRenderer;
 
 import javax.swing.JOptionPane;
@@ -19,22 +22,23 @@ import org.python.core.Py;
 import org.python.core.PyString;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
+import pixeltoy.PixelToy;
 
 public class Main {
 	private static PythonInterpreter interpreter;
 	
 	public static void main(String[] args) {
 		interpreter = new PythonInterpreter();
-		createWindow();
-		initOpenGL();
+		init();
 		try {
 			interpreter.execfile(Main.class.getClassLoader().getResourceAsStream("init.py"));
 			PySystemState sys = Py.getSystemState();
 			sys.path.append(new PyString(getJARPath()));
-			//TextureRenderer.init();
 			interpreter.execfile("script.py");
 			idle();
 		} catch(Exception e) {
+            AudioController.killALData();
+            e.printStackTrace();
 			JOptionPane.showMessageDialog(null, e.toString(), "Python error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -42,9 +46,10 @@ public class Main {
 	public static void init() {
 		createWindow();
 		initOpenGL();
-		//TextureRenderer.init();
+        AudioController.init();
+		TextureRenderer.init();
 	}
-
+	
 	private static void createWindow() {
 		try {
 			Display.setResizable(true);
@@ -75,17 +80,18 @@ public class Main {
 	}
 	
 	private static void newFrame() {
-		//TextureRenderer.drawScreenFrame();
+		TextureRenderer.drawScreenFrame();
 		
 		Display.update();
 		Display.sync(60);
 
-		//TextureRenderer.setupNextFrame();
-		//TextureRenderer.updateTexture();
+		TextureRenderer.setupNextFrame();
+		TextureRenderer.updateTexture();
+
+        AudioController.update();
 		
 		if(Display.isCloseRequested()) {
-			Display.destroy();
-			System.exit(0);
+			PixelToy.quit();
 		}
 		
 		glMatrixMode(GL_MODELVIEW);
@@ -93,14 +99,14 @@ public class Main {
 		glViewport(0, 0, Display.getWidth(), Display.getHeight()); 
 		gluOrtho2D(0, Display.getWidth(), 0, Display.getHeight());
 		
-		//Input.updateVariables(interpreter);
-		
+		Input.updateVariables(interpreter);
+
 		glDisable(GL_TEXTURE_2D);
 	}
 	
 	public static void newBlankFrame() {
 		newFrame();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		GraphicsController.reset();
 	}
 
 	private static void idle() {
